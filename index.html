@@ -9,55 +9,82 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
 
-    <title>CS 184 Final Project Proposal</title>
+    <title>CS 184 Final Project Milestone Status Report</title>
   </head>
   <body>
     <header>
       <h4>CS 184: Computer Graphics, Spring 2020</h4>
-      <h4>Final Project Proposal: Google Streetview to Panorama Painting</h4>
-      <h5>Wenlong Huang, Chelsea Ye, Mingmao Sun</h5>
+      <h4>Final Project: Multi-Shot High Dynamic Range</h4>
+      <h4>Milestone Status Report</h4>
+      <h5>Wenlong Huang, Chelsea Ye</h5>
       <br>
     </header>
 
     <h4>Summary</h4>
-    <p>This project attempts to solve the computational photography and imaging problem of “image-to-image translation” using CycleGAN. The result is demonstrated by converting Google street maps to panorama paintings that allows viewers to see the surrounding streetviews in oil painting style in 360 degrees. </p>
+    <p>This project attempts to create HDR photos by automatically combining multiple exposures into a single high dynamic range radiance map, and then converting this radiance map to an image suitable for display through tone mapping. Our approach follows the algorithm presented in the paper by Paul E. Debevec and Jitendra Malik, <a href="https://people.eecs.berkeley.edu/~malik/papers/debevec-malik97.pdf">Recovering High Dynamic Range Radiance Maps from Photographs</a>. </p>
 
-    <h4>Project Description</h4>
-    <p>The core of this project is to convert images from one domain to another without pairing -- the problem is also known as unpaired image to image translation. The significant challenge is that it is hard to define direct correspondence between the images from the two domains, real photos and paintings, because the paired data are not abundant. To tackle this challenge, we use a famous work called CycleGAN, which enforces cycle-consistency in the translation between the two domains and leads to superior results in image generation.</p>
+    <h4>Milestone Result</h4>
+    <p>After carefully reading through the paper, we have started implementing the algorithm in Python. We have finished implementing the first part of the algorithm and we are able to obtain reconstructed radiance map from a series of images. However, though the radiance values across each channel makes sense, there seem to be a minor bug that causes them to be lower than expected. We show the preliminary results below where we visualize the radiance map across each channel for two sets of images.</p>
+    <p>Example Images:</p>
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/arch/1_4.jpg" width="300"><br>T = 1/4 seconds</td>
+        <td align="center"><img border="0" src="images/arch/1_25.jpg" width="300"><br>T = 1/25 seconds</td>
+        <td align="center"><img border="0" src="images/arch/3_1.jpg" width="300"><br>T = 3 seconds</td>
+        <td align="center"><img border="0" src="images/arch/17_1.jpg" width="300"><br>T = 17 seconds</td>
+      </tr>
+      <tr>
+        <td align="center"><img border="0" src="images/arch/arch_rmap_0.png" width="300"><br>Red Channel</td>
+        <td align="center"><img border="0" src="images/arch/arch_rmap_1.png" width="300"><br>Green Channel</td>
+        <td align="center"><img border="0" src="images/arch/arch_rmap_2.png" width="300"><br>Blue Channel</td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/chapel/32_1.png" width="150"><br>T = 32 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/16_1.png" width="150"><br>T = 16 second</td>
+        <td align="center"><img border="0" src="images/chapel/8_1.png" width="150"><br>T = 8 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/4_1.png" width="150"><br>T = 4 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/2_1.png" width="150"><br>T = 2 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_1.png" width="150"><br>T = 1 second</td>
+        <td align="center"><img border="0" src="images/chapel/1_2.png" width="150"><br>T = 1/2 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_4.png" width="150"><br>T = 1/4 seconds</td>
+      </tr>
+      <tr>
+        <td align="center"><img border="0" src="images/chapel/1_8.png" width="150"><br>T = 1/8 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_16.png" width="150"><br>T = 1/16 second</td>
+        <td align="center"><img border="0" src="images/chapel/1_32.png" width="150"><br>T = 1/32 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_64.png" width="150"><br>T = 1/64 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_128.png" width="150"><br>T = 1/128 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_256.png" width="150"><br>T = 1/256 second</td>
+        <td align="center"><img border="0" src="images/chapel/1_512.png" width="150"><br>T = 1/512 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_1024.png" width="150"><br>T = 1/1024 seconds</td>
+      </tr>
+    </table>
 
-    <h4>Goals and Deliverables</h4>
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/chapel/chapel_rmap_0.png" width="300"><br>Red Channel</td>
+        <td align="center"><img border="0" src="images/chapel/chapel_rmap_1.png" width="300"><br>Green Channel</td>
+        <td align="center"><img border="0" src="images/chapel/chapel_rmap_2.png" width="300"><br>Blue Channel</td>
+      </tr>
+    </table>
+
+    <h4>Project Progress and Future Plan</h4>
+    <p>Due to our change of project topic after getting revisions from TA and change in group member, we have adjusted our schedule to the following plan:</p>
     <p>
-      <ol>
-        <li>We PLAN to deliver: an interactive system in which users can drag the mouse to change the viewing angle and view the neighborhood in oil paintings. To accomplish this, we would have to create the oil paintings in panorama and create a system to enable the interactivity. However, due to the inconsistency of the performance of CycleGAN and the limitation of the quality of the data, the image quality may not be as good. Yet we plan to have at least a viewing system that has a baseline image quality that users would recognize that it is an oil painting of street view.</li>
-        <li>We HOPE to deliver: If the data quality is great and everything goes well, users can view their neighborhood -- like Google Streetview -- that allows people to view their neighborhood as if it is an oil painting while seamlessly preserving the structure and the content of the image so that the buildings and the stores are easily recognizable.</li>
-        <li>Example Images: 
-          <table>
-            <tr>
-              <td align="center"><img border="0" src="images/original.jpg" width="1000"><br>Original Streetview Panorama (photo by <a href="https://www.flickr.com/photos/jms2/2635425478">June Marie</a>)</td>
-            </tr>
-            <tr>
-              <td align="center"><img border="0" src="images/painting.jpg" width="1000"><br>Streetview Panorama Painting (work by <a href="https://fineartamerica.com/featured/wheaton-front-street-panorama-christopher-arndt.html">Christopher Arndt</a>)</td>
-            </tr>
-          </table>
-        </li>
-
-      </ol>
+      <li>Week 1 - HDR Radiance Map Construction: recover the inverse of the function mapping exposure to pixel value.</li>
+      <li>Week 2 - Tone Mapping: convert the radiance map into an image suitable for viewing on a low dynamic range display.</li>
+      <li>Week 3 - Finalizing Deliverables and Buffer Time: finalize the report and some extra buffer time if anything does not go well.</li>
     </p>
-
-    <h4>Schedule</h4>
-    <p>
-      <li>Week 1 - Data Collection: collect data from both Google Streetview and oil paintings by scraping them online</li>
-      <li>Week 2 - Model Training: train the CycleGAN model using online computing resources such as Google Cloud or AWS with the data collected</li>
-      <li>Week 3 - Creating Viewing System: create the interactive viewing system that allows users to drag their mouse and change the viewing angle.</li>
-      <li>Week 4 - Finalizing Reports and Buffer Time: finalize the report and some extra buffer time if anything does not go well.</li>
-    </p>
+    <p>So far we are in track with the planned progress as we finished Week 1 goals. We plan to finish the second half of the project by early next week, and then prepare for deliverables of the final presentation. </p>
 
     <h4>Resources</h4>
     <p>
       <ol>
-        <li>Paper on <a href="https://arxiv.org/abs/1703.10593">Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks</a></li>
-        <li><a href="https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix">CycleGAN implementation</a></li>
-        <li>Computing platform: Google Cloud or AWS</li>
+        <li>Paper on <a href="https://people.eecs.berkeley.edu/~malik/papers/debevec-malik97.pdf">Recovering High Dynamic Range Radiance Maps from Photographs</a> by Paul E. Debevec and Jitendra Malik.</li>
+        <li><a href="https://youtu.be/1gURs87TOms">Milestone Video</a></li>
+        <li><a href="https://docs.google.com/presentation/d/1tf-rT_T5oQlNCUjO4of_wmDejIzLkGhU3p6jJAsqULY/edit?usp=sharing">Milestone Presentation Slides</li>
       </ol>
     </p>
 
