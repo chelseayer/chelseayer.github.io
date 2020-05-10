@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+
+    <title>CS 184 Final Project Proposal</title>
+  </head>
+  <body>
+    <header>
+      <h4>CS 184: Computer Graphics, Spring 2020</h4>
+      <h4>Final Project Proposal: Google Streetview to Panorama Painting</h4>
+      <h5>Wenlong Huang, Chelsea Ye, Mingmao Sun</h5>
+      <br>
+    </header>
+
+    <h4>Summary</h4>
+    <p>This project attempts to solve the computational photography and imaging problem of “image-to-image translation” using CycleGAN. The result is demonstrated by converting Google street maps to panorama paintings that allows viewers to see the surrounding streetviews in oil painting style in 360 degrees. </p>
+
+    <h4>Project Description</h4>
+    <p>The core of this project is to convert images from one domain to another without pairing -- the problem is also known as unpaired image to image translation. The significant challenge is that it is hard to define direct correspondence between the images from the two domains, real photos and paintings, because the paired data are not abundant. To tackle this challenge, we use a famous work called CycleGAN, which enforces cycle-consistency in the translation between the two domains and leads to superior results in image generation.</p>
+
+    <h4>Goals and Deliverables</h4>
+    <p>
+      <ol>
+        <li>We PLAN to deliver: an interactive system in which users can drag the mouse to change the viewing angle and view the neighborhood in oil paintings. To accomplish this, we would have to create the oil paintings in panorama and create a system to enable the interactivity. However, due to the inconsistency of the performance of CycleGAN and the limitation of the quality of the data, the image quality may not be as good. Yet we plan to have at least a viewing system that has a baseline image quality that users would recognize that it is an oil painting of street view.</li>
+        <li>We HOPE to deliver: If the data quality is great and everything goes well, users can view their neighborhood -- like Google Streetview -- that allows people to view their neighborhood as if it is an oil painting while seamlessly preserving the structure and the content of the image so that the buildings and the stores are easily recognizable.</li>
+        <li>Example Images: 
+          <table>
+            <tr>
+              <td align="center"><img border="0" src="images/original.jpg" width="1000"><br>Original Streetview Panorama (photo by <a href="https://www.flickr.com/photos/jms2/2635425478">June Marie</a>)</td>
+            </tr>
+            <tr>
+              <td align="center"><img border="0" src="images/painting.jpg" width="1000"><br>Streetview Panorama Painting (work by <a href="https://fineartamerica.com/featured/wheaton-front-street-panorama-christopher-arndt.html">Christopher Arndt</a>)</td>
+            </tr>
+          </table>
+        </li>
+
+      </ol>
+    </p>
+
+    <h4>Schedule</h4>
+    <p>
+      <li>Week 1 - Data Collection: collect data from both Google Streetview and oil paintings by scraping them online</li>
+      <li>Week 2 - Model Training: train the CycleGAN model using online computing resources such as Google Cloud or AWS with the data collected</li>
+      <li>Week 3 - Creating Viewing System: create the interactive viewing system that allows users to drag their mouse and change the viewing angle.</li>
+      <li>Week 4 - Finalizing Reports and Buffer Time: finalize the report and some extra buffer time if anything does not go well.</li>
+    </p>
+
+    <h4>Resources</h4>
+    <p>
+      <ol>
+        <li>Paper on <a href="https://arxiv.org/abs/1703.10593">Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks</a></li>
+        <li><a href="https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix">CycleGAN implementation</a></li>
+        <li>Computing platform: Google Cloud or AWS</li>
+      </ol>
+    </p>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
