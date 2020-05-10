@@ -1,0 +1,17 @@
+
+header {
+
+}
+
+body {
+    font-family: Avenir;
+    margin: 50px 150px;
+}
+
+.code {
+    font-family: Inconsolata;
+}
+
+h1 {
+    text-align: center;
+}
