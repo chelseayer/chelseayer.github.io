@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+
+    <title>CS 184 Final Project Milestone Status Report</title>
+  </head>
+  <body>
+    <header>
+      <h4>CS 184: Computer Graphics, Spring 2020</h4>
+      <h4>Final Project: Multi-Shot High Dynamic Range</h4>
+      <h4>Milestone Status Report</h4>
+      <h5>Wenlong Huang, Chelsea Ye</h5>
+      <br>
+    </header>
+
+    <h4>Summary</h4>
+    <p>This project attempts to create HDR photos by automatically combining multiple exposures into a single high dynamic range radiance map, and then converting this radiance map to an image suitable for display through tone mapping. Our approach follows the algorithm presented in the paper by Paul E. Debevec and Jitendra Malik, <a href="https://people.eecs.berkeley.edu/~malik/papers/debevec-malik97.pdf">Recovering High Dynamic Range Radiance Maps from Photographs</a>. </p>
+
+    <h4>Milestone Result</h4>
+    <p>After carefully reading through the paper, we have started implementing the algorithm in Python. We have finished implementing the first part of the algorithm and we are able to obtain reconstructed radiance map from a series of images. However, though the radiance values across each channel makes sense, there seem to be a minor bug that causes them to be lower than expected. We show the preliminary results below where we visualize the radiance map across each channel for two sets of images.</p>
+    <p>Example Images:</p>
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/arch/1_4.jpg" width="300"><br>T = 1/4 seconds</td>
+        <td align="center"><img border="0" src="images/arch/1_25.jpg" width="300"><br>T = 1/25 seconds</td>
+        <td align="center"><img border="0" src="images/arch/3_1.jpg" width="300"><br>T = 3 seconds</td>
+        <td align="center"><img border="0" src="images/arch/17_1.jpg" width="300"><br>T = 17 seconds</td>
+      </tr>
+      <tr>
+        <td align="center"><img border="0" src="images/arch/arch_rmap_0.png" width="300"><br>Red Channel</td>
+        <td align="center"><img border="0" src="images/arch/arch_rmap_1.png" width="300"><br>Green Channel</td>
+        <td align="center"><img border="0" src="images/arch/arch_rmap_2.png" width="300"><br>Blue Channel</td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/chapel/32_1.png" width="150"><br>T = 32 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/16_1.png" width="150"><br>T = 16 second</td>
+        <td align="center"><img border="0" src="images/chapel/8_1.png" width="150"><br>T = 8 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/4_1.png" width="150"><br>T = 4 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/2_1.png" width="150"><br>T = 2 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_1.png" width="150"><br>T = 1 second</td>
+        <td align="center"><img border="0" src="images/chapel/1_2.png" width="150"><br>T = 1/2 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_4.png" width="150"><br>T = 1/4 seconds</td>
+      </tr>
+      <tr>
+        <td align="center"><img border="0" src="images/chapel/1_8.png" width="150"><br>T = 1/8 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_16.png" width="150"><br>T = 1/16 second</td>
+        <td align="center"><img border="0" src="images/chapel/1_32.png" width="150"><br>T = 1/32 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_64.png" width="150"><br>T = 1/64 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_128.png" width="150"><br>T = 1/128 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_256.png" width="150"><br>T = 1/256 second</td>
+        <td align="center"><img border="0" src="images/chapel/1_512.png" width="150"><br>T = 1/512 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/1_1024.png" width="150"><br>T = 1/1024 seconds</td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/chapel/chapel_rmap_0.png" width="300"><br>Red Channel</td>
+        <td align="center"><img border="0" src="images/chapel/chapel_rmap_1.png" width="300"><br>Green Channel</td>
+        <td align="center"><img border="0" src="images/chapel/chapel_rmap_2.png" width="300"><br>Blue Channel</td>
+      </tr>
+    </table>
+
+    <h4>Project Progress and Future Plan</h4>
+    <p>Due to our change of project topic after getting revisions from TA and change in group member, we have adjusted our schedule to the following plan:</p>
+    <p>
+      <li>Week 1 - HDR Radiance Map Construction: recover the inverse of the function mapping exposure to pixel value.</li>
+      <li>Week 2 - Tone Mapping: convert the radiance map into an image suitable for viewing on a low dynamic range display.</li>
+      <li>Week 3 - Finalizing Deliverables and Buffer Time: finalize the report and some extra buffer time if anything does not go well.</li>
+    </p>
+    <p>So far we are in track with the planned progress as we finished Week 1 goals. We plan to finish the second half of the project by early next week, and then prepare for deliverables of the final presentation. </p>
+
+    <h4>Resources</h4>
+    <p>
+      <ol>
+        <li>Paper on <a href="https://people.eecs.berkeley.edu/~malik/papers/debevec-malik97.pdf">Recovering High Dynamic Range Radiance Maps from Photographs</a> by Paul E. Debevec and Jitendra Malik.</li>
+        <li><a href="https://youtu.be/1gURs87TOms">Milestone Video</a></li>
+        <li><a href="https://docs.google.com/presentation/d/1tf-rT_T5oQlNCUjO4of_wmDejIzLkGhU3p6jJAsqULY/edit?usp=sharing">Milestone Presentation Slides</li>
+      </ol>
+    </p>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>

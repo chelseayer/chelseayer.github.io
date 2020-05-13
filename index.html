@@ -9,89 +9,147 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
 
-    <title>CS 184 Final Project Milestone Status Report</title>
+    <title>CS 184 Final Project Report</title>
   </head>
   <body>
     <header>
       <h4>CS 184: Computer Graphics, Spring 2020</h4>
       <h4>Final Project: Multi-Shot High Dynamic Range</h4>
-      <h4>Milestone Status Report</h4>
-      <h5>Wenlong Huang, Chelsea Ye</h5>
+      <h4>Final Report</h4>
+      <h5>Wenlong Huang | Chelsea Ye</h5>
       <br>
     </header>
+    <h4>Presentation Video</h4>
+    Click <a href="https://youtu.be/vWbhS_wz6N8">here</a> to go to the presentation video.
+    <br><h4>Abstract</h4>
+    <p>This project attempts to create HDR photos by automatically combining multiple exposures into a single high dynamic range radiance map, and then converting this radiance map to an image suitable for display through tone mapping. The first step of creating radiance maps follows the algorithm presented in the paper by Paul E. Debevec and Jitendra Malik, <a href="https://people.eecs.berkeley.edu/~malik/papers/debevec-malik97.pdf">Recovering High Dynamic Range Radiance Maps from Photographs</a>, and the second step of tone mapping follows the method by Fre ́do Durand and Julie Dorsey, <a href="http://people.csail.mit.edu/fredo/PUBLI/Siggraph2002/DurandBilateral.pdf">Fast Bilateral Filtering for the Display of High-Dynamic-Range Images</a>.</p>
 
-    <h4>Summary</h4>
-    <p>This project attempts to create HDR photos by automatically combining multiple exposures into a single high dynamic range radiance map, and then converting this radiance map to an image suitable for display through tone mapping. Our approach follows the algorithm presented in the paper by Paul E. Debevec and Jitendra Malik, <a href="https://people.eecs.berkeley.edu/~malik/papers/debevec-malik97.pdf">Recovering High Dynamic Range Radiance Maps from Photographs</a>. </p>
+    <h4>Radiance Map Construction</h4>
+    <p>The observed pixel value \(Z_{i j} \) for pixel \(i\) in image \(j\) is a function of unknown scene radiance and known exposure duration: \[Z_{i j} = f (E_i \nabla t_j)\].
 
-    <h4>Milestone Result</h4>
-    <p>After carefully reading through the paper, we have started implementing the algorithm in Python. We have finished implementing the first part of the algorithm and we are able to obtain reconstructed radiance map from a series of images. However, though the radiance values across each channel makes sense, there seem to be a minor bug that causes them to be lower than expected. We show the preliminary results below where we visualize the radiance map across each channel for two sets of images.</p>
-    <p>Example Images:</p>
+    \(E_i\) is the unknown radiance and \(\nabla t_j \) is the exposure time at pixel \(i\). Together their product is the exposure at that pixel. And \(f\) is an unknown, complicated pixel response curve. Instead of solving for \(f\), we solve for \(g = ln(f^{-1})\) which maps a discrete pixel value (0 to 255) to the log exposure at that pixel. The function \(g\) can be written as: \[g(Z_{i j}) = ln(E_i) + ln(t_j)\].
+
+    Since the scene radiance remains constant across multiple images that we take and we know the exposure time, we can try to solve for \(g\) by setting up a quadratic objective function that we wish to minimize: \[O = \sum_{i=1}^{N} \sum_{j=1}^{P} (g(Z_{i j}) - ln(E_i) - ln(\nabla t_j))^2 + \lambda \sum_{z=1}^{254} g''(z)^2\]
+
+    where the first term ensures the solution satisfies the previous equation as close as possible and the second term is a smoothing function whose effect we examine below.
+
+    Having obtained \(g\), we can find the scene radiance by rearanging the above equation: \[ln(E_i) = g(Z_{i j}) - ln(\nabla t_j)\].
+
+    During our estimation, we also apply the tent weighting function as suggested in the paper. All the exposures contribute to the final resulting image. However, darker pixels tends to have higher noise and the bright pixels also satuate. Therefore, we give less weighting to those pixels. The formulation of such weighting function as suggested in the paper is: 
+    \[
+    w(z) = \begin{cases}
+  z \text{ for } z \leq 127 \\[.5em]
+  255 - z \text{ for } z > 127
+\end{cases}
+    \].
+
+  We show the reference image (one image selected from each scene) and the reconstructed radiance map below. </p>
+
     <table>
       <tr>
-        <td align="center"><img border="0" src="images/arch/1_4.jpg" width="300"><br>T = 1/4 seconds</td>
-        <td align="center"><img border="0" src="images/arch/1_25.jpg" width="300"><br>T = 1/25 seconds</td>
-        <td align="center"><img border="0" src="images/arch/3_1.jpg" width="300"><br>T = 3 seconds</td>
-        <td align="center"><img border="0" src="images/arch/17_1.jpg" width="300"><br>T = 17 seconds</td>
+        <td align="center"><img border="0" src="images/chapel/4_1.png" width="200"><br>Chapel</td>
+        <td align="center"><img border="0" src="images/chapel_rmap.jpg" width="260"><br>Radiance Map</td>
+        <td align="center"><img border="0" src="images/house/1_640.jpg" width="200"><br>House</td>
+        <td align="center"><img border="0" src="images/house_rmap.jpg" width="260"><br>Radiance Map</td>
       </tr>
+    </table>
+
+  We also provide the plots of the recovered relationship in <code>Chapel</code> between the exposure and pixel values, both without and with the second-derivative smoothing term and tent function weighting. We observe that the smoothing term plays a major role in separating out the noise, and the tent weighting function does not contribute significantly to the result in this set of images.
+
+  <table>
       <tr>
-        <td align="center"><img border="0" src="images/arch/arch_rmap_0.png" width="300"><br>Red Channel</td>
-        <td align="center"><img border="0" src="images/arch/arch_rmap_1.png" width="300"><br>Green Channel</td>
-        <td align="center"><img border="0" src="images/arch/arch_rmap_2.png" width="300"><br>Blue Channel</td>
+        <td align="center"><img border="0" src="images/chapel_lambda0_identity.png" width="230"><br>\(\lambda = 0\), identity weighting</td>
+        <td align="center"><img border="0" src="images/chapel_lambda100_identity.png" width="230"><br>\(\lambda = 100\), identity weighting</td>
+        <td align="center"><img border="0" src="images/chapel_lambda0_tent.png" width="230"><br>\(\lambda = 0\), tent weighting</td>
+        <td align="center"><img border="0" src="images/chapel_lambda100_tent.png" width="230"><br>\(\lambda = 100\), tent weighting</td>
+      </tr>
+    </table>
+
+  <h4>Tone Mapping</h4>
+  <p>Obtaining the radiance map is only the first step of creaing a great HDR image. The next step is to show details in the dark and bright regions of the scene on a low-dynamic-range display. In this step, we implement both a global tone-mapping operator using gamma compression and a local tone-mapping operator following the paper by <a href="http://people.csail.mit.edu/fredo/PUBLI/Siggraph2002/DurandBilateral.pdf">Fre ́do Durand and Julie Dorsey</a>. The local tone-mapping algorithm is based on bilateral filtering, which decomposes the radiance map into high-frequency details and low-frequency structure.</p>
+  <h4>Results</h4>
+  <p>We show the final images obtained by both tone-mapping methods and the bilateral decomposition below. <br><b>Please zoom in to see the bilateral-filtered detail since the pixel values tend to have small variance and may not be visible at small scale.</b></p>
+    
+    <h5>Garden</h5>
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/garden/1_160.jpg" width="184"><br>T = 1/160 seconds</td>
+        <td align="center"><img border="0" src="images/garden/1_320.jpg" width="184"><br>T = 1/320 seconds</td>
+        <td align="center"><img border="0" src="images/garden/1_800.jpg" width="184"><br>T = 1/800 seconds</td>
+        <td align="center"><img border="0" src="images/garden/1_1600.jpg" width="184"><br>T = 1/1600 seconds</td>
+        <td align="center"><img border="0" src="images/garden/1_3200.jpg" width="184"><br>T = 1/3200 seconds</td>
       </tr>
     </table>
     <table>
       <tr>
-        <td align="center"><img border="0" src="images/chapel/32_1.png" width="150"><br>T = 32 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/16_1.png" width="150"><br>T = 16 second</td>
-        <td align="center"><img border="0" src="images/chapel/8_1.png" width="150"><br>T = 8 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/4_1.png" width="150"><br>T = 4 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/2_1.png" width="150"><br>T = 2 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/1_1.png" width="150"><br>T = 1 second</td>
-        <td align="center"><img border="0" src="images/chapel/1_2.png" width="150"><br>T = 1/2 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/1_4.png" width="150"><br>T = 1/4 seconds</td>
-      </tr>
-      <tr>
-        <td align="center"><img border="0" src="images/chapel/1_8.png" width="150"><br>T = 1/8 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/1_16.png" width="150"><br>T = 1/16 second</td>
-        <td align="center"><img border="0" src="images/chapel/1_32.png" width="150"><br>T = 1/32 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/1_64.png" width="150"><br>T = 1/64 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/1_128.png" width="150"><br>T = 1/128 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/1_256.png" width="150"><br>T = 1/256 second</td>
-        <td align="center"><img border="0" src="images/chapel/1_512.png" width="150"><br>T = 1/512 seconds</td>
-        <td align="center"><img border="0" src="images/chapel/1_1024.png" width="150"><br>T = 1/1024 seconds</td>
+        <td align="center"><img border="0" src="images/garden_global.jpg" width="230"><br>Global Tone-Mapped HDR</td>
+        <td align="center"><img border="0" src="images/garden_detail.jpg" width="230"><br>Bilateral Filtered Detail</td>
+        <td align="center"><img border="0" src="images/garden_largescale.jpg" width="230"><br>Bilateral Filtered Structure</td>
+        <td align="center"><img border="0" src="images/garden_hdr.jpg" width="230"><br><b>Local Tone-Mapped HDR</b></td>
       </tr>
     </table>
-
+    
+    <h5>Mug</h5>
     <table>
       <tr>
-        <td align="center"><img border="0" src="images/chapel/chapel_rmap_0.png" width="300"><br>Red Channel</td>
-        <td align="center"><img border="0" src="images/chapel/chapel_rmap_1.png" width="300"><br>Green Channel</td>
-        <td align="center"><img border="0" src="images/chapel/chapel_rmap_2.png" width="300"><br>Blue Channel</td>
+        <td align="center"><img border="0" src="images/mug/1_8.jpg" width="184"><br>T = 1/8 seconds</td>
+        <td align="center"><img border="0" src="images/mug/1_20.jpg" width="184"><br>T = 1/20 seconds</td>
+        <td align="center"><img border="0" src="images/mug/1_40.jpg" width="184"><br>T = 1/40 seconds</td>
+        <td align="center"><img border="0" src="images/mug/1_80.jpg" width="184"><br>T = 1/80 seconds</td>
+        <td align="center"><img border="0" src="images/mug/1_160.jpg" width="184"><br>T = 1/160 seconds</td>
       </tr>
     </table>
-
-    <h4>Project Progress and Future Plan</h4>
-    <p>Due to our change of project topic after getting revisions from TA and change in group member, we have adjusted our schedule to the following plan:</p>
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/mug_global.jpg" width="230"><br>Global Tone-Mapped HDR</td>
+        <td align="center"><img border="0" src="images/mug_detail.jpg" width="230"><br>Bilateral Filtered Detail</td>
+        <td align="center"><img border="0" src="images/mug_largescale.jpg" width="230"><br>Bilateral Filtered Structure</td>
+        <td align="center"><img border="0" src="images/mug_hdr.jpg" width="230"><br><b>Local Tone-Mapped HDR</b></td>
+      </tr>
+    </table>
+    <h5>Window</h5>
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/window/4_1.jpg" width="184"><br>T = 4 seconds</td>
+        <td align="center"><img border="0" src="images/window/1_1.jpg" width="184"><br>T = 1 second</td>
+        <td align="center"><img border="0" src="images/window/1_4.jpg" width="184"><br>T = 1/4 seconds</td>
+        <td align="center"><img border="0" src="images/window/1_15.jpg" width="184"><br>T = 1/15 seconds</td>
+        <td align="center"><img border="0" src="images/window/1_60.jpg" width="184"><br>T = 1/60 seconds</td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/window_global.jpg" width="230"><br>Global Tone-Mapped HDR</td>
+        <td align="center"><img border="0" src="images/window_detail.jpg" width="230"><br>Bilateral Filtered Detail</td>
+        <td align="center"><img border="0" src="images/window_largescale.jpg" width="230"><br>Bilateral Filtered Structure</td>
+        <td align="center"><img border="0" src="images/window_hdr.jpg" width="230"><br><b>Local Tone-Mapped HDR</b></td>
+      </tr>
+    </table>
+    <br><h5> Alternative Tone-Mapping </h6>
+    We also implement another local tone-mapping algorithm based on the template image. Observe that in most of the scenerios, we have a stack of differently exposed images in the order of increasing exposure, and the middle image (the template image) is usually the correctly exposed one. This image may not contain all the details in the bright and dark regions but it definitely contains the least amount of overexposed or underexposed regions. Therefore, we can treat this image as the template image and stretch the intensities of the normalized radiance map according to the template image. We show the comparison on the <code>Chapel</code> image below. We can see that the image obtained with this method also achieves reasonable tone-mapping result, but it has high contrast and is not as bright as the the local tone-mapping method based on bilateral filter that we have shown above.
+    <table>
+      <tr>
+        <td align="center"><img border="0" src="images/chapel_hdr.jpg" width="300"><br>Bilateral Tone-Mapping</td>
+        <td align="center"><img border="0" src="images/chapel_extra.jpg" width="300"><br>Template Tone-Mapping</td>
+      </tr>
+    </table>
+    <h4>References</h4>
     <p>
-      <li>Week 1 - HDR Radiance Map Construction: recover the inverse of the function mapping exposure to pixel value.</li>
-      <li>Week 2 - Tone Mapping: convert the radiance map into an image suitable for viewing on a low dynamic range display.</li>
-      <li>Week 3 - Finalizing Deliverables and Buffer Time: finalize the report and some extra buffer time if anything does not go well.</li>
-    </p>
-    <p>So far we are in track with the planned progress as we finished Week 1 goals. We plan to finish the second half of the project by early next week, and then prepare for deliverables of the final presentation. </p>
+    [1] Debevec, Paul E., and Jitendra Malik. "Recovering high dynamic range radiance maps from photographs." ACM SIGGRAPH 2008 classes. 2008. 1-10.<br>
 
-    <h4>Resources</h4>
-    <p>
-      <ol>
-        <li>Paper on <a href="https://people.eecs.berkeley.edu/~malik/papers/debevec-malik97.pdf">Recovering High Dynamic Range Radiance Maps from Photographs</a> by Paul E. Debevec and Jitendra Malik.</li>
-        <li><a href="https://youtu.be/1gURs87TOms">Milestone Video</a></li>
-        <li><a href="https://docs.google.com/presentation/d/1tf-rT_T5oQlNCUjO4of_wmDejIzLkGhU3p6jJAsqULY/edit?usp=sharing">Milestone Presentation Slides</li>
-      </ol>
+    [2] Durand, Frédo, and Julie Dorsey. "Fast bilateral filtering for the display of high-dynamic-range images." Proceedings of the 29th annual conference on Computer graphics and interactive techniques. 2002.<br>
+
+    [3] Dataset from <a href="http://cs.brown.edu/courses/cs129/asgn/proj2_hdr/index.html">the HDR assignment</a> from the Computational Photography course at Brown University. 
     </p>
+    <h4>Contributions</h4>
+    <p>We work together in most parts of the project, including data collection and implementation of radiance map reconstruction and tone-mapping algorithms. Visualization is done by Chelsea and HTML is created and formatted by Wenlong. Our third member has dropped the course and thus is not a part of the project. This project is also done as a final project for CS194-26.</p>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   </body>
 </html>
